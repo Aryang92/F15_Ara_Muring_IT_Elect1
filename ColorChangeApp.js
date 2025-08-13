@@ -1,6 +1,5 @@
-// ColorChangerApp.js
 import React, { useState } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 const ColorChangerApp = () => {
   const [backgroundColor, setBackgroundColor] = useState('white');
@@ -8,20 +7,27 @@ const ColorChangerApp = () => {
   return (
     <View style={[styles.container, { backgroundColor }]}>
       <Text style={styles.title}>Color Changer App</Text>
-      <View style={styles.buttonContainer}>
-        <Button 
-          title="White" 
-          onPress={() => setBackgroundColor('white')} 
-        />
-        <Button 
-          title="Light Blue" 
-          onPress={() => setBackgroundColor('#add8e6')} 
-        />
-        <Button 
-          title="Light Green" 
-          onPress={() => setBackgroundColor('#90ee90')} 
-        />
-      </View>
+      
+      <TouchableOpacity 
+        style={styles.button}
+        onPress={() => setBackgroundColor('white')}
+      >
+        <Text>Reset to White</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity 
+        style={styles.button}
+        onPress={() => setBackgroundColor('lightblue')}
+      >
+        <Text>Light Blue</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity 
+        style={styles.button}
+        onPress={() => setBackgroundColor('lightgreen')}
+      >
+        <Text>Light Green</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -31,17 +37,16 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
     marginBottom: 20,
   },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '80%',
+  button: {
+    backgroundColor: '#f0f0f0',
+    padding: 10,
+    margin: 10,
+    borderRadius: 5,
   },
 });
 
