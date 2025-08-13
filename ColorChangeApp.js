@@ -1,8 +1,14 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 
 const ColorChangerApp = () => {
   const [backgroundColor, setBackgroundColor] = useState('white');
+
+  // Add this for debugging
+  const handlePress = (color) => {
+    console.log(`Changing color to: ${color}`);
+    setBackgroundColor(color);
+  };
 
   return (
     <View style={[styles.container, { backgroundColor }]}>
@@ -10,21 +16,21 @@ const ColorChangerApp = () => {
       
       <TouchableOpacity 
         style={styles.button}
-        onPress={() => setBackgroundColor('white')}
+        onPress={() => handlePress('white')}
       >
         <Text>Reset to White</Text>
       </TouchableOpacity>
 
       <TouchableOpacity 
         style={styles.button}
-        onPress={() => setBackgroundColor('lightblue')}
+        onPress={() => handlePress('lightblue')}
       >
         <Text>Light Blue</Text>
       </TouchableOpacity>
 
       <TouchableOpacity 
         style={styles.button}
-        onPress={() => setBackgroundColor('lightgreen')}
+        onPress={() => handlePress('lightgreen')}
       >
         <Text>Light Green</Text>
       </TouchableOpacity>
@@ -32,22 +38,4 @@ const ColorChangerApp = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 24,
-    marginBottom: 20,
-  },
-  button: {
-    backgroundColor: '#f0f0f0',
-    padding: 10,
-    margin: 10,
-    borderRadius: 5,
-  },
-});
-
-export default ColorChangerApp;
+// ... rest of the code remains the same
