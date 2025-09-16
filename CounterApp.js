@@ -14,6 +14,7 @@ const CounterApp = () => {
           title="Increment (+1)" 
           onPress={() => setCount(count + 1)} 
         />
+        <View style={styles.buttonSpacer} />
         <Button 
           title="Decrement (-1)" 
           onPress={() => setCount(count - 1)} 
@@ -43,6 +44,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '80%',
+  },
+  buttonSpacer: {
+    width: 10, // Adds space between buttons
   },
 });
 
