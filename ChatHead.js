@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { 
   View, 
   Text, 
@@ -7,10 +7,15 @@ import {
   FlatList, 
   StyleSheet, 
   KeyboardAvoidingView, 
+  Keyboard, 
+  Image, 
   Platform,
-  Keyboard,
-  Image
+  ScrollView
 } from 'react-native';
+
+// 🖼️ Import your local images from assets folder
+import senderImg from './assets/sender.jpg';
+import profileImg from './assets/profile.jpeg';
 
 const ChatHead = () => {
   const [activeTab, setActiveTab] = useState('chat');
@@ -29,14 +34,16 @@ const ChatHead = () => {
       text: 'Hi yasin my love mwaa!', 
       user: 'Shael', 
       timestamp: '2 hours ago',
-      likes: 3
+      likes: 3,
+      image: './assets/sender.jpg'
     },
     { 
       id: '2', 
       text: 'Hilom shael mura kag tala tskkkk!', 
       user: 'Yasin', 
       timestamp: '1 hour ago',
-      likes: 5
+      likes: 5,
+      image: './assets/profile.jpeg'
     },
   ]);
 
@@ -44,6 +51,7 @@ const ChatHead = () => {
   const [newComment, setNewComment] = useState('');
   const flatListRef = useRef(null);
 
+  // 📩 Send Message
   const handleSendMessage = () => {
     if (inputText.trim() === '') return;
 
@@ -57,6 +65,7 @@ const ChatHead = () => {
     setMessages(prev => [...prev, userMessage]);
     setInputText('');
 
+    // Simulate bot reply
     setTimeout(() => {
       const botResponse = {
         id: (Date.now() + 1).toString(),
@@ -68,6 +77,7 @@ const ChatHead = () => {
     }, 800);
   };
 
+  // 💬 Add Comment
   const handleAddComment = () => {
     if (newComment.trim() === '') return;
 
@@ -76,7 +86,8 @@ const ChatHead = () => {
       text: newComment,
       user: 'You',
       timestamp: 'Just now',
-      likes: 0
+      likes: 0,
+      image: Image.resolveAssetSource(profileImg).uri // ✅ Local asset
     };
 
     setComments(prev => [comment, ...prev]);
@@ -84,6 +95,7 @@ const ChatHead = () => {
     Keyboard.dismiss();
   };
 
+  // 👍 Like a Comment
   const handleLikeComment = (id) => {
     setComments(prev =>
       prev.map(item =>
@@ -92,18 +104,14 @@ const ChatHead = () => {
     );
   };
 
-  // --- DISPLAY CHAT MESSAGE WITH AVATAR ---
+  // 💌 Render Chat Message
   const renderMessage = ({ item }) => (
     <View style={[
       styles.messageRow,
       item.sender === 'user' ? styles.userRow : styles.botRow
     ]}>
-      
       {item.sender === 'bot' && (
-        <Image 
-          source={{ uri: "https://i.pravatar.cc/150?img=3" }}
-          style={styles.avatar}
-        />
+        <Image source={senderImg} style={styles.avatar} />
       )}
 
       <View style={[
@@ -120,15 +128,12 @@ const ChatHead = () => {
       </View>
 
       {item.sender === 'user' && (
-        <Image 
-          source={{ uri: "https://i.pravatar.cc/150?img=5" }}
-          style={styles.avatar}
-        />
+        <Image source={profileImg} style={styles.avatar} />
       )}
     </View>
   );
 
-  // --- DISPLAY COMMENT WITH PROFILE PIC ---
+  // 💭 Render Comment Section
   const renderComment = ({ item }) => (
     <View style={styles.commentCard}>
       <View style={styles.commentHeader}>
@@ -146,12 +151,19 @@ const ChatHead = () => {
       </View>
 
       <Text style={styles.commentText}>{item.text}</Text>
+
+      {item.image && (
+        <Image 
+          source={{ uri: item.image }}
+          style={styles.commentImage}
+        />
+      )}
     </View>
   );
 
   return (
     <View style={styles.container}>
-      {/* Tabs */}
+      {/* Header Tabs */}
       <View style={styles.header}>
         <TouchableOpacity 
           style={[styles.tab, activeTab === 'chat' && styles.activeTab]}
@@ -168,7 +180,6 @@ const ChatHead = () => {
         </TouchableOpacity>
       </View>
 
-      {/* CHAT / COMMENTS CONTENT */}
       {activeTab === 'chat' ? (
         <>
           <FlatList
@@ -179,12 +190,16 @@ const ChatHead = () => {
             contentContainerStyle={styles.messagesContainer}
           />
 
-          <KeyboardAvoidingView style={styles.inputContainer}>
+          <KeyboardAvoidingView 
+            style={styles.inputContainer} 
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          >
             <TextInput
               style={styles.input}
               value={inputText}
               onChangeText={setInputText}
               placeholder="Type a message..."
+              placeholderTextColor="#999"
             />
             <TouchableOpacity style={styles.sendButton} onPress={handleSendMessage}>
               <Text style={styles.sendButtonText}>Send</Text>
@@ -200,7 +215,10 @@ const ChatHead = () => {
             contentContainerStyle={styles.commentsContainer}
           />
 
-          <KeyboardAvoidingView style={styles.commentInputContainer}>
+          <KeyboardAvoidingView 
+            style={styles.commentInputContainer}
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          >
             <TextInput
               style={styles.commentInput}
               value={newComment}
@@ -226,12 +244,11 @@ const styles = StyleSheet.create({
   tabText:{color:"#eee",fontSize:16},
   activeTabText:{color:"#fff", fontWeight:"bold"},
   
-  // Chat message layout
+  // Chat
   messageRow:{flexDirection:"row",alignItems:"flex-end",marginVertical:6},
   userRow:{justifyContent:"flex-end"},
   botRow:{justifyContent:"flex-start"},
   avatar:{width:35,height:35,borderRadius:50,marginHorizontal:8},
-
   messageBubble:{maxWidth:"70%",padding:10,borderRadius:15},
   userBubble:{backgroundColor:"#007AFF",alignSelf:"flex-end"},
   botBubble:{backgroundColor:"#E5E5EA",alignSelf:"flex-start"},
@@ -239,20 +256,20 @@ const styles = StyleSheet.create({
   userMessageText:{color:"#fff"},
   botMessageText:{color:"#000"},
   timestamp:{fontSize:10,marginTop:3,color:"#777"},
-
   inputContainer:{flexDirection:"row",padding:10,borderTopWidth:1,borderColor:"#ccc"},
-  input:{flex:1,borderWidth:1,borderColor:"#ccc",borderRadius:20,paddingHorizontal:15},
+  input:{flex:1,borderWidth:1,borderColor:"#ccc",borderRadius:20,paddingHorizontal:15,color:"#000"},
   sendButton:{backgroundColor:"#007AFF",marginLeft:10,borderRadius:20,paddingHorizontal:18,justifyContent:"center"},
   sendButtonText:{color:"#fff"},
 
+  // Comments
   commentCard:{backgroundColor:"#f8f8f8",padding:12,borderRadius:10,marginBottom:10},
   commentHeader:{flexDirection:"row",alignItems:"center"},
   userName:{fontWeight:"bold",color:"#007AFF"},
   commentText:{marginTop:5,fontSize:15,color:"#333"},
   likeText:{color:"#444",fontSize:12,marginLeft:8},
-
+  commentImage:{width:"100%",height:180,borderRadius:10,marginTop:8},
   commentInputContainer:{flexDirection:"row",padding:10,borderTopWidth:1,borderColor:"#ddd"},
-  commentInput:{flex:1,borderWidth:1,borderColor:"#ddd",borderRadius:10,padding:10,backgroundColor:"#fff"},
+  commentInput:{flex:1,borderWidth:1,borderColor:"#ddd",borderRadius:10,padding:10,backgroundColor:"#fff",color:"#000"},
   postButton:{marginLeft:10,backgroundColor:"#34C759",borderRadius:10,paddingVertical:10,paddingHorizontal:15},
   postButtonText:{color:"#fff",fontWeight:"bold"},
 });
